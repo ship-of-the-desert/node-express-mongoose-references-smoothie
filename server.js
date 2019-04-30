@@ -20,6 +20,8 @@ app.use(methodOverride('_method'));
 //SMOOTHIE INDEX
 app.get('/smoothies', (req, res) => {
   Smoothie.find()
+    .populate({ path: 'fruits', select: 'name'})
+    .sort('-createdAt')
     .then(smoothies => {
       res.send(smoothies);
     })
@@ -27,19 +29,31 @@ app.get('/smoothies', (req, res) => {
 
 //SMOOTHIE NEW
 app.get('/smoothies/new', (req, res) => {
-  res.render('smoothies/new')
+  Fruit.find()
+    .then(fruits => {
+      res.render('smoothies/new', { fruits })
+    })
 })
 
 //SMOOTHIE POST
 app.post('/smoothies', (req, res) => {
   let smoothie = new Smoothie(req.body)
-  smoothie.save()
-    .then(smoothie => {
-      console.log(smoothie)
-      res.redirect('/smoothies')
-    })
-})
+  let fruits = req.body.arrayOfFruits
 
+  if (Array.isArray(fruits)) {
+    fruits.forEach(fruitId => {
+      smoothie.fruits.push(fruitId)
+    })
+  } else {
+    smoothie.fruits.push(fruits)
+  }
+
+  smoothie.save()
+  .then(smoothie => {
+    console.log(smoothie)
+    res.redirect('/smoothies')
+  })
+})
 
 //INDEX
 app.get('/fruits', (req, res) => {

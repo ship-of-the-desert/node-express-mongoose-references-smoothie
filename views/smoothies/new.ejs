@@ -10,7 +10,12 @@
     <form action="/smoothies" method="POST">
       <label for="name">Name</label>
       <input type="text" name="name" id="name"/>
-      
+      <br />
+      <% fruits.forEach(fruit => { %>
+        <input type="checkbox" name="arrayOfFruits" value="<%= fruit._id%>"><%= fruit.name %></input>
+      <% }) %>
+
+
       <input type="submit" value="Create Smoothie">
     </form>
   </body>
