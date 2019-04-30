@@ -1,6 +1,7 @@
 # Full Mongoose CRUD for Fruits and Add Smoothie
 
 <br>
+
 ## Add Mongoose to the Edit route
 
 In `server.js`
