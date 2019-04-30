@@ -62,26 +62,33 @@ app.get('/fruits/:indexOfFruitsArray', (req, res) => {
       fruit: fruit
     })
   })
-
-
 })
 
 //EDIT
 app.get('/fruits/:indexOfFruitsArray/edit', (req, res) => {
-  res.render('edit', { fruit: fruits[req.params.indexOfFruitsArray],
-    fruitIndex: req.params.indexOfFruitsArray })
+  Fruit.findById(req.params.indexOfFruitsArray)
+    .then(fruit => {
+      res.render('edit', { fruit })
+    })
 })
 
 //DELETE
 app.delete('/fruits/:indexOfFruitsArray', (req, res) => {
-  fruits.splice(req.params.indexOfFruitsArray, 1);
-  res.redirect('/fruits');
+  Fruit.findByIdAndDelete(req.params.indexOfFruitsArray)
+    .then(() => {
+      res.redirect('/fruits');
+    })
 })
 
 //PUT
 app.put('/fruits/:indexOfFruitsArray', (req, res) => {
-  fruits[req.params.indexOfFruitsArray] = req.body;
-  res.redirect('/fruits');
+  let updatedFruit = req.body
+  updatedFruit.readyToEat = req.body.readyToEat === 'on' ? true : false
+ 
+  Fruit.findByIdAndUpdate(req.params.indexOfFruitsArray, updatedFruit)
+    .then(fruit => {
+      res.redirect(`/fruits/${fruit._id}`);
+    })
 })
 
 app.listen(port, () => {
