@@ -1,6 +1,91 @@
 # Full Mongoose CRUD for Fruits and Add Smoothie
 
 <br>
+## Add Mongoose to the Edit route
+
+In `server.js`
+
+```js
+app.get('/fruits/:indexOfFruitsArray/edit', (req, res) => {
+  Fruit.findById(req.params.indexOfFruitsArray)
+    .then(fruit => {
+      res.render('edit', { fruit })
+    })
+})
+```
+
+In `views/edit.ejs`
+
+```js
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/app.css">
+    <title></title>
+  </head>
+  <body>
+    <h1>Edit Fruit Page</h1>
+    <form action="/fruits/<%= fruit._id %>?_method=put" method="POST">
+      <label for="name">Name</label>
+      <input type="text" name="name" id="name" value="<%= fruit.name %>"/>
+      <label for="color">Color</label>
+      <input type="text" name="color" id="color" value="<%= fruit.color %>"/>
+      <label for="isReadyToEat">Is Ready to Eat</label>
+      <input type="checkbox" name="readyToEat" id="isReadyToEat" 
+      checked="<%= fruit.readyToEat ? 'checked' : null %>"/>
+      <input type="submit" value="Edit Fruit">
+    </form>
+  </body>
+</html>
+```
+
+<br>
+
+## Add Mongoose to the PUT route
+
+In `server.js`
+
+```js
+app.put('/fruits/:indexOfFruitsArray', (req, res) => {
+  let fruit = req.body
+  fruit.readyToEat = fruit.readyToEat === 'on' ? true : false
+
+  Fruit.findByIdAndUpdate(
+      req.params.indexOfFruitsArray, // id of fruit to updte
+      fruit, // the fruit data
+      { new: true } // return the updated document
+    ).then(updatedFruit => {
+      console.log(updatedFruit)
+      res.redirect(`/fruits/${updatedFruit._id}`);
+    })
+})
+```
+<br>
+
+## Add Mongoose to the DELETE route
+
+In 	`views/index.ejs`
+
+```html
+      <form action="/fruits/<%= fruits[i]._id %>?_method=DELETE" method="POST">
+        <input type="submit" value="DELETE"/>
+      </form>
+```
+
+In `server.js`
+
+```js
+//FRUIT DELETE
+app.delete('/fruits/:indexOfFruitsArray', (req, res) => {
+  Fruit.findByIdAndDelete(req.params.indexOfFruitsArray)
+    .then(() => {
+      res.redirect('/fruits');
+    })
+})
+```
+
+<br>
 
 ## Smoothie model
 
@@ -106,91 +191,6 @@ createData()
 
 <br>
 
-## Add Mongoose to the Edit route
-
-In `server.js`
-
-```js
-app.get('/fruits/:indexOfFruitsArray/edit', (req, res) => {
-  Fruit.findById(req.params.indexOfFruitsArray)
-    .then(fruit => {
-      res.render('edit', { fruit })
-    })
-})
-```
-
-In `views/edit.ejs`
-
-```js
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="/app.css">
-    <title></title>
-  </head>
-  <body>
-    <h1>Edit Fruit Page</h1>
-    <form action="/fruits/<%= fruit._id %>?_method=put" method="POST">
-      <label for="name">Name</label>
-      <input type="text" name="name" id="name" value="<%= fruit.name %>"/>
-      <label for="color">Color</label>
-      <input type="text" name="color" id="color" value="<%= fruit.color %>"/>
-      <label for="isReadyToEat">Is Ready to Eat</label>
-      <input type="checkbox" name="readyToEat" id="isReadyToEat" 
-      checked="<%= fruit.readyToEat ? 'checked' : null %>"/>
-      <input type="submit" value="Edit Fruit">
-    </form>
-  </body>
-</html>
-```
-
-<br>
-
-## Add Mongoose to the PUT route
-
-In `server.js`
-
-```js
-app.put('/fruits/:indexOfFruitsArray', (req, res) => {
-  let fruit = req.body
-  fruit.readyToEat = fruit.readyToEat === 'on' ? true : false
-
-  Fruit.findByIdAndUpdate(
-      req.params.indexOfFruitsArray, // id of fruit to updte
-      fruit, // the fruit data
-      { new: true } // return the updated document
-    ).then(updatedFruit => {
-      console.log(updatedFruit)
-      res.redirect(`/fruits/${updatedFruit._id}`);
-    })
-})
-```
-<br>
-
-## Add Mongoose to the DELETE route
-
-In 	`views/index.ejs`
-
-```html
-      <form action="/fruits/<%= fruits[i]._id %>?_method=DELETE" method="POST">
-        <input type="submit" value="DELETE"/>
-      </form>
-```
-
-In `server.js`
-
-```js
-//FRUIT DELETE
-app.delete('/fruits/:indexOfFruitsArray', (req, res) => {
-  Fruit.findByIdAndDelete(req.params.indexOfFruitsArray)
-    .then(() => {
-      res.redirect('/fruits');
-    })
-})
-```
-
-<br>
 
 ## Smoothie Index
 
@@ -300,6 +300,3 @@ app.get('/smoothies', (req, res) => {
 
 - [Mongoose Populate](https://mongoosejs.com/docs/populate.html)
 - [Mongoose Schema](https://mongoosejs.com/docs/guide.html)
-	
-	
-
