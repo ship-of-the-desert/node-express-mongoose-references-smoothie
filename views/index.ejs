@@ -16,8 +16,9 @@
         <%= fruits[i].color %>, 
         <%= fruits[i].readyToEat %>
       </li>
-      <a href="/fruits/<%= i %>/edit">EDIT</a>
-      <form action="/fruits/<%= i %>?_method=DELETE" method="POST">
+      <a href="/fruits/<%= fruits[i]._id  %>">SHOW</a>
+      <a href="/fruits/<%= fruits[i]._id  %>/edit">EDIT</a>
+      <form action="/fruits/<%= fruits[i]._id  %>?_method=DELETE" method="POST">
         <input type="submit" value="DELETE"/>
       </form>
       <% } %>

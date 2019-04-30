@@ -2,9 +2,13 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const port = process.env.PORT
-const fruits = require('./models/fruits');
+const Fruit = require('./models/fruit');
 const ejs = require('ejs');
 const methodOverride = require('method-override')
+const mongoose = require('mongoose')
+
+mongoose.connect('mongodb://localhost/fruits', {useNewUrlParser : true})
+.then(()=> console.log('Mongodb is running'),(err)=> console.log(err) )
 
 app.set('view engine', 'ejs');
 
@@ -14,7 +18,12 @@ app.use(methodOverride('_method'));
 
 //INDEX
 app.get('/fruits', (req, res) => {
-  res.render('index', { fruits })
+  
+  Fruit.find()
+  .then((fruits)=>{
+    res.render('index', { fruits })
+  }).catch(err => console.log(err))
+
 })
 
 //NEW
@@ -24,21 +33,37 @@ app.get('/fruits/new', (req, res) => {
 
 //POST
 app.post('/fruits', (req, res) => {
-  console.log(req.body)
-  if (req.body.readyToEat === 'on') { // if checked, req.body.readyToEat is set to 'on'
-    req.body.readyToEat = true
-  } else { // if not checked, req.body.readyToEat is undefined
-    req.body.readyToEat = false
+
+  let data = {
+    name: req.body.name, 
+    color: req.body.color
   }
-  fruits.push(req.body)
-  res.redirect('/fruits')
+
+  if (req.body.readyToEat === 'on') { // if checked, req.body.readyToEat is set to 'on'
+    data.readyToEat = true
+  } else { // if not checked, req.body.readyToEat is undefined
+    data.readyToEat = false
+  }
+
+  let fruit = new Fruit(data)
+  fruit.save()
+  .then(()=> {
+    res.redirect('/fruits')
+  }).catch(err => console.log(err))
+
+  
 })
 
 //SHOW
 app.get('/fruits/:indexOfFruitsArray', (req, res) => {
-  res.render('show', {
-    fruit: fruits[req.params.indexOfFruitsArray]
+  Fruit.findById(req.params.indexOfFruitsArray)
+  .then((fruit)=>{
+    res.render('show', {
+      fruit: fruit
+    })
   })
+
+
 })
 
 //EDIT
