@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT
 const Fruit = require('./models/fruit');
+const Smoothie = require('./models/smoothie');
 const ejs = require('ejs');
 const methodOverride = require('method-override')
 const mongoose = require('mongoose')
@@ -16,14 +17,36 @@ app.use(express.urlencoded({extended:false}));
 app.use(express.static('public'));
 app.use(methodOverride('_method'));
 
+//SMOOTHIE INDEX
+app.get('/smoothies', (req, res) => {
+  Smoothie.find()
+    .then(smoothies => {
+      res.send(smoothies);
+    })
+})
+
+//SMOOTHIE NEW
+app.get('/smoothies/new', (req, res) => {
+  res.render('smoothies/new')
+})
+
+//SMOOTHIE POST
+app.post('/smoothies', (req, res) => {
+  let smoothie = new Smoothie(req.body)
+  smoothie.save()
+    .then(smoothie => {
+      console.log(smoothie)
+      res.redirect('/smoothies')
+    })
+})
+
+
 //INDEX
 app.get('/fruits', (req, res) => {
-  
   Fruit.find()
   .then((fruits)=>{
     res.render('index', { fruits })
   }).catch(err => console.log(err))
-
 })
 
 //NEW
